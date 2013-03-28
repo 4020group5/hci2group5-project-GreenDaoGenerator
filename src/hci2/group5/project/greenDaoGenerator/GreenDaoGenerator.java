@@ -32,6 +32,7 @@ public class GreenDaoGenerator {
 		private static final String DAO_PACKAGE = "hci2.group5.project.dao";
 
 		// we also wanna customize the root where the dao classes to be generated
+		// .. is the workspace directory so don't forget to import this project to your workspace
 		private static final String WHERE_TO_GENERATE_DAOS = "../project/src-gen";
 
 		private Schema _schema;
