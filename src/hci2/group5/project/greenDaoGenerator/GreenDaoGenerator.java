@@ -56,21 +56,32 @@ public class GreenDaoGenerator {
 		 * They are coded together because they have n:1 and 1:n relationship.
 		 */
 		private void addBuildingAndDepartment() {
+			//// Location table
+			Entity location = _schema.addEntity("Location");
+			location.addIdProperty();
+			location.addDoubleProperty("latitude").notNull();
+			location.addDoubleProperty("longitude").notNull();
+
+
 			//// Building table
 	        Entity building = _schema.addEntity("Building");
 	        building.addIdProperty();
 	        building.addStringProperty("name").notNull();
+	        // building to location is a 1:1 relationship - 1 building has 1 locations
+	        Property locationIdProperty = building.addLongProperty("locationId").notNull().getProperty();
+	        building.addToOne(location, locationIdProperty, "location");
+
 	        building.addStringProperty("builtBy").notNull();
 	        building.addIntProperty("builtYear").notNull();
 	        // building.addListProperty("departments");   doesn't have it... Read on...
 	        building.addStringProperty("supplementaryInfo");
+
 
 	        //// Department table
 	        Entity department = _schema.addEntity("Department");
 	        department.addIdProperty();
 	        Property departmentNameProperty = department.addStringProperty("name").notNull().getProperty();
 	        Property buildingIdProperty = department.addLongProperty("buildingId").notNull().getProperty();
-
 	        // department to building is a 1:1 relationship - 1 department is located in 1 building
 	        department.addToOne(building, buildingIdProperty, "building");
 
