@@ -48,6 +48,8 @@ public class GreenDaoGenerator {
 			schema.setDefaultJavaPackageDao(DAO_PACKAGE);
 			schema.setDefaultJavaPackageTest(DAO_TEST_PACKAGE);
 
+			schema.enableKeepSectionsByDefault();
+
 			return schema;
 		}
 
