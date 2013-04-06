@@ -37,8 +37,12 @@ public class GreenDaoGenerator {
 
 		private Schema _schema;
 
+		private Entity location, faculty;
+
 		public SchemaBuilder() {
 			_schema = getSchema();
+			addFaculties();
+			addLocations();
 			addBuildingAndDepartment();
 		}
 
@@ -53,18 +57,24 @@ public class GreenDaoGenerator {
 			return schema;
 		}
 
+		private void addFaculties() {
+			faculty = _schema.addEntity("Faculty");
+			faculty.addIdProperty();
+			faculty.addStringProperty("name").notNull();
+		}
+
+		private void addLocations() {
+			location = _schema.addEntity("Location");
+			location.addIdProperty();
+			location.addDoubleProperty("latitude").notNull();
+			location.addDoubleProperty("longitude").notNull();
+		}
+		
 		/**
 		 * Builds entities for building and department data.
 		 * They are coded together because they have n:1 and 1:n relationship.
 		 */
 		private void addBuildingAndDepartment() {
-			//// Location table
-			Entity location = _schema.addEntity("Location");
-			location.addIdProperty();
-			location.addDoubleProperty("latitude").notNull();
-			location.addDoubleProperty("longitude").notNull();
-
-
 			//// Building table
 	        Entity building = _schema.addEntity("Building");
 	        building.addIdProperty();
@@ -82,8 +92,11 @@ public class GreenDaoGenerator {
 	        //// Department table
 	        Entity department = _schema.addEntity("Department");
 	        department.addIdProperty();
+	        Property facultyIdProperty = department.addLongProperty("facultyId").notNull().getProperty();
 	        Property departmentNameProperty = department.addStringProperty("name").notNull().getProperty();
 	        Property buildingIdProperty = department.addLongProperty("buildingId").notNull().getProperty();
+	        // department to faculty is a 1:1 relationship - 1 department is in 1 faculty
+	        department.addToOne(faculty, facultyIdProperty, "faculty");
 	        // department to building is a 1:1 relationship - 1 department is located in 1 building
 	        department.addToOne(building, buildingIdProperty, "building");
 
