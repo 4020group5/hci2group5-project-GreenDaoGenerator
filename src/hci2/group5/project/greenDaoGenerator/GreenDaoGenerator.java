@@ -39,11 +39,16 @@ public class GreenDaoGenerator {
 
 		private Entity location, faculty;
 
+		private Entity building;
+
 		public SchemaBuilder() {
 			_schema = getSchema();
 			addFaculties();
 			addLocations();
 			addBuildingAndDepartment();
+
+			addLibraries();
+			addFoodServices();
 		}
 
 		private Schema getSchema() {
@@ -69,14 +74,14 @@ public class GreenDaoGenerator {
 			location.addDoubleProperty("latitude").notNull();
 			location.addDoubleProperty("longitude").notNull();
 		}
-		
+
 		/**
 		 * Builds entities for building and department data.
 		 * They are coded together because they have n:1 and 1:n relationship.
 		 */
 		private void addBuildingAndDepartment() {
 			//// Building table
-	        Entity building = _schema.addEntity("Building");
+	        building = _schema.addEntity("Building");
 	        building.addIdProperty();
 	        building.addStringProperty("name").notNull();
 	        // building to location is a 1:1 relationship - 1 building has 1 locations
@@ -104,6 +109,27 @@ public class GreenDaoGenerator {
 	        ToMany buildingToDepartments = building.addToMany(department, buildingIdProperty, "departments");
 	        buildingToDepartments.orderAsc(departmentNameProperty);
 	    }
+
+		private void addLibraries() {
+			Entity library = _schema.addEntity("Library");
+			library.addIdProperty();
+			library.addStringProperty("name").notNull();
+			library.addStringProperty("room").notNull();
+			Property buildingIdProperty = library.addLongProperty("buildingId").notNull().getProperty();
+			library.addToOne(building, buildingIdProperty, "building");
+		}
+
+		private void addFoodServices() {
+			Entity foodService = _schema.addEntity("FoodService");
+			foodService.addIdProperty();
+			foodService.addStringProperty("name").notNull();
+			foodService.addStringProperty("floor").notNull();
+			Property buildingIdProperty = foodService.addLongProperty("buildingId").notNull().getProperty();
+			// food to building is a 1:1 relationship - 1 food service is located in 1 building
+			foodService.addToOne(building, buildingIdProperty, "building");
+			foodService.addDoubleProperty("latitude").notNull();
+			foodService.addDoubleProperty("longitude").notNull();
+		}
 
 		public void run() throws Exception {
 			new DaoGenerator().generateAll(_schema, WHERE_TO_GENERATE_DAOS);
